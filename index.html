@@ -1,0 +1,78 @@
+<DOCTYPE html>
+<html>
+  <head>
+    <script type="text/javascript">
+
+      let CURRENT_MAX, CURRENT_MIN;
+      let target, tries = 0, status = 'RUNNING';
+      
+      function runGame() {
+        CURRENT_MIN = 1
+        CURRENT_MAX = Number.parseInt(document.querySelector('#prompt').value, 10)
+        target = takeNewInRange()
+
+        makeAGuess()
+      }
+
+      function makeAGuess(){
+        const guess = takeNewInRange()
+        const result = validateInput(guess) 
+        
+        if (!result) {
+          return;
+        }
+
+        appendLog(`Target ${target} guess ${guess} result ${result}`);
+
+        if (result === 'TOO_HIGH') {
+          CURRENT_MAX = guess - 1;
+          makeAGuess()
+        } else if (result === 'TOO_LOW'){
+          CURRENT_MIN = guess + 1;
+          makeAGuess()
+        }
+      }
+      
+      function validateInput(guess) {
+        tries += 1
+
+        if (guess === target) {
+          appendLog(`WON in ${tries} tries. Target was ${target}`)
+          setFinished()
+        } else if (guess > target) {
+          return 'TOO_HIGH'
+        } else if (guess < target){
+          return 'TOO_LOW'
+        }
+      }
+
+      function setMessage(input) {
+        const label = document.querySelector('#msg')
+        label.innerHTML = input
+      }
+
+      function appendLog(msg) {
+        const log = document.querySelector('#log')
+        const item = document.createElement('li')
+        item.innerHTML = msg
+        
+        log.appendChild(item)
+      }
+      
+      function setFinished() {
+        status = "FINISHED"
+        document.querySelector("#submitBtn").disabled = true
+      }
+      
+      function takeNewInRange() {
+        return Math.floor(Math.random() * (CURRENT_MAX - CURRENT_MIN + 1)) + CURRENT_MIN;
+      }
+    </script>
+  </head>
+  <body>
+    <span id="msg">Pass me a max number to pick random number</span>
+    <input id="prompt" type="text"/>
+    <button id="submitBtn" onclick="runGame()">Send guess</button>
+    <ul id="log"></ul>
+  </body> 
+</html>
